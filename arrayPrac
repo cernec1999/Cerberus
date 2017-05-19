@@ -11,3 +11,23 @@ done
 
 echo ${Test[@]}
 
+
+
+yertt=0
+
+
+echo "Please enter the names of the users (be exact)"
+read bumb
+
+
+for wordi in $bumb
+do
+Yeng[$yertt]=$wordi
+yertt+=1
+done
+
+
+echo ${Yeng[@]}
+
+
+
