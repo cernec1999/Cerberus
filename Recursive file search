@@ -1,7 +1,0 @@
-sudo find . -print | grep -i '.*[.]mp3'
-sudo find . -print | grep -i '.*[.]m3u'
-sudo find . -print | grep -i '.*[.]m4a'
-sudo find . -print | grep -i '.*[.]mov'
-sudo find . -print | grep -i '.*[.]mp4'
-sudo find . -print | grep -i '.*[.]wmv'
-sudo find . -print | grep -i '.*[.]wav'
