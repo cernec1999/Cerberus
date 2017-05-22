@@ -1,33 +1,53 @@
 #!/bin/bash
 
-hans=$(cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1)
-yertt=0
+initUsers=$(cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1)
+iter=0
 
-for word in $hans
+for user in $initUsers
 do
-Test[$yertt]=$word
-yertt+=1
+Users[$iter]=$user
+Users2[$iter]=$user
+iter=$iter+1
 done
 
-echo ${Test[@]}
+#echo ${Users[@]}
 
 
 
-yertt=0
+iter=0
 
 
 echo "Please enter the names of the users (be exact)"
-read bumb
+read input
 
 
-for wordi in $bumb
+for usr in $input
 do
-Yeng[$yertt]=$wordi
-yertt+=1
+Input[$iter]=$usr
+iter=$iter+1
+done
+#echo ${Input[@]}
+y=${#Users[@]}
+u=${#Input[@]}
+
+
+
+for ((i = 0; i < $u; i++)); do
+  for ((j = 0; j < $y; j++)); do
+uvar=${Users[$j]}
+ivar=${Input[$i]}
+   
+if [[ "$uvar" == "$ivar" ]];
+then 
+#echo "yes $uvar $ivar" 
+Users2[$j]=""
+
+fi
+
+  done
 done
 
-
-echo ${Yeng[@]}
-
+echo "Examine the following users:"
+echo ${Users2[@]}
 
 
