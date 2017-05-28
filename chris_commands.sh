@@ -28,6 +28,10 @@ function run {
 	printf "${NC}"
 }
 
+#Prerequisite for installs
+info "Updating package list"
+run "apt-get --yes update"
+
 #Make sure password policy is up to date
 info "Setting password policy"
 pass_replace PASS_MAX_DAYS "PASS_MAX_DAYS 90"
@@ -50,12 +54,6 @@ find "/home" -type f -name "*.$i"
 done
 printf "${NC}"
 
-#Update system
-info "Updating system"
-run "apt-get --yes update"
-run "apt-get --yes upgrade"
-run "apt-get --yes dist-upgrade"
-
 #Install openssh and disable ssh root login
 info "Installing openssh"
 run "apt-get --yes install openssh-server"
@@ -67,6 +65,77 @@ info "Installing firewall (ufw)"
 run "apt-get --yes install ufw gufw"
 info "Enabling firewall"
 run "ufw enable"
+
+#User account stuff
+info "Please enter the valid computer administrators, using a space as a delimiter."
+read input
+arr=($input)
+
+#get an array of all user accounts
+allUsers=$(cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1)
+
+#remove current user account from allUsers
+delete=$(who | awk '{print $1}')
+allUsers=("${allUsers[@]/$delete}")
+allUsers=($allUsers)
+
+#loop through every user account and make them standard
+for i in "${allUsers[@]}"
+do
+	chage -m 7 -M 90 -I 10 -W 14 $i
+	run "deluser $i sudo"
+done
+
+#loop through each admin user and make them sudo
+for i in "${arr[@]}"
+do
+	#make the user a sudo user
+	run "adduser $i sudo"
+done
+
+#print out users who are hidden that are root or admin or whatever
+SAVEIFS=$IFS
+# Change IFS to new line.
+IFS=$'\n'
+delim=($(getent group root wheel adm admin sudo))
+# Restore IFS
+IFS=$SAVEIFS
+rogue_users=()
+for i in "${delim[@]}"
+do
+	i=${i##*:}
+	i=${i//,/ }
+	i=${i=i;print}
+	cur_arr=($i)
+	rogue_users+=( "${cur_arr[@]}" )
+done
+
+unique=($(echo "${rogue_users[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+#remove current admins
+delete+=( syslog )
+delete+=( "${arr[@]}" )
+unique=("${unique[@]/$delete}")
+
+for del in ${delete[@]}
+do
+   unique=("${unique[@]/$del}") #Quotes when working with strings
+done
+
+#unique=$(${unique=unique;print})
+final="${unique[*]}"
+info "Returning a list of potentially rogue users. Please check these."
+printf "${RED}"
+echo ${final=final;print}
+printf "${NC}"
+
+#Update system
+info "Updating system"
+printf "${GREEN}"
+apt-get update
+apt-get --yes upgrade
+apt-get --yes dist-upgrade
+printf "${NC}"
 
 #Configure anti-virus
 info "Installing and configuring anti-virus software"
@@ -84,4 +153,3 @@ info "Scan complete! Report saved in /tmp/report.txt. Displaying now."
 printf "${RED}"
 cat /tmp/report.txt
 printf "${NC}"
-
