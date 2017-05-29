@@ -10,7 +10,8 @@ sudo ./main.sh
 ```
 
 The core of Cerberus is divided into two subsections: **User Accounts** and **System Preferences**.
-##User Accounts
+
+## User Accounts
 The **User Accounts** section pertains to securing current Ubuntu accounts. It also pertains to detecting rogue users. It currently has the following features:
 * Listing user accounts that should not be on the system
 * Assigning administrators to the administrator group, and removing the admin group from users who should not be an administrator.
@@ -18,7 +19,7 @@ The **User Accounts** section pertains to securing current Ubuntu accounts. It a
 * Sets a password policy for each user, except for the user executing the script
 * Looks for potentially hidden users (those users in one of these groups: getent group root wheel adm admin sudo)
 
-##System Preferences
+## System Preferences
 The **System Preferences** section pertains to securing the Ubuntu system as a whole. It currently has the following features:
 * Sets the password policy to secure values (/etc/login.defs)
 * Removes the root password
